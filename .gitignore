@@ -1,0 +1,22 @@
+# Byte-compiled / temporary files
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+
+# OS files
+.DS_Store
+
+# Model files
+*.pkl
+
+# IDE configs
+.vscode/
+.idea/
+
+# Render build cache
+render-build/
