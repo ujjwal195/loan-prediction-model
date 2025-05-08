@@ -1,97 +1,287 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loan Delinquency Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h2 {
+            color: #2C3E50;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #34495E;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #BDC3C7;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            border-color: #2980B9;
+        }
+
+        input[type="submit"] {
+            background-color: #3498DB;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980B9;
+        }
+
+        .prediction-result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2C3E50;
+        }
+
+        .prediction-result.success {
+            color: #27AE60;
+        }
+
+        .prediction-result.failure {
+            color: #E74C3C;
+        }
+
+        .form-container h3 {
+            text-align: center;
+        }
+
+        .form-container input[type="number"], .form-container input[type="text"] {
+            display: inline-block;
+            width: calc(50% - 20px);
+            margin-right: 10px;
+        }
+
+        .form-container input[type="number"]:last-child,
+        .form-container input[type="text"]:last-child {
+            margin-right: 0;
+        }
+
+        .form-container .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            .form-container input[type="number"], .form-container input[type="text"] {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <h2>Enter Borrower Details</h2>
-    <form method="POST" action="/predict">
-        <label>Credit Score:</label><br>
-        <input type="number" name="CreditScore" step="1" required><br><br>
+    <div class="form-container">
+        <form method="POST" action="/predict">
+            <div class="form-row">
+                <div>
+                    <label>Credit Score:</label>
+                    <input type="number" name="CreditScore" step="1" required>
+                </div>
+                <div>
+                    <label>First Time Homebuyer (0 or 1):</label>
+                    <input type="number" name="FirstTimeHomebuyer" step="1" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>First Time Homebuyer (0 or 1):</label><br>
-        <input type="number" name="FirstTimeHomebuyer" step="1" min="0" max="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>MIP:</label>
+                    <input type="number" step="0.01" name="MIP" required>
+                </div>
+                <div>
+                    <label>Units:</label>
+                    <input type="number" name="Units" step="1" required>
+                </div>
+            </div>
 
-        <label>MIP:</label><br>
-        <input type="number" step="0.01" name="MIP" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>OCLTV:</label>
+                    <input type="number" step="0.01" name="OCLTV" required>
+                </div>
+                <div>
+                    <label>DTI:</label>
+                    <input type="number" step="0.01" name="DTI" required>
+                </div>
+            </div>
 
-        <label>Units:</label><br>
-        <input type="number" name="Units" step="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Orig UPB:</label>
+                    <input type="number" name="OrigUPB" step="1" required>
+                </div>
+                <div>
+                    <label>LTV:</label>
+                    <input type="number" step="0.01" name="LTV" required>
+                </div>
+            </div>
 
-        <label>OCLTV:</label><br>
-        <input type="number" step="0.01" name="OCLTV" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Orig Interest Rate:</label>
+                    <input type="number" step="0.01" name="OrigInterestRate" required>
+                </div>
+                <div>
+                    <label>Orig Loan Term:</label>
+                    <input type="number" step="1" name="OrigLoanTerm" required>
+                </div>
+            </div>
 
-        <label>DTI:</label><br>
-        <input type="number" step="0.01" name="DTI" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Loan Purpose P (0 or 1):</label>
+                    <input type="number" step="1" name="LoanPurpose_P" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Loan Purpose R (0 or 1):</label>
+                    <input type="number" step="1" name="LoanPurpose_R" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Orig UPB:</label><br>
-        <input type="number" name="OrigUPB" step="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Occupancy INV (0 or 1):</label>
+                    <input type="number" step="1" name="Occupancy_INV" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Occupancy PR (0 or 1):</label>
+                    <input type="number" step="1" name="Occupancy_PR" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>LTV:</label><br>
-        <input type="number" step="0.01" name="LTV" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Occupancy SH (0 or 1):</label>
+                    <input type="number" step="1" name="Occupancy_SH" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Property Type Condo (0 or 1):</label>
+                    <input type="number" step="1" name="PropertyType_Condo" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Orig Interest Rate:</label><br>
-        <input type="number" step="0.01" name="OrigInterestRate" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Property Type Multi-Family (0 or 1):</label>
+                    <input type="number" step="1" name="PropertyType_Multi-Family" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Property Type Other (0 or 1):</label>
+                    <input type="number" step="1" name="PropertyType_Other" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Orig Loan Term:</label><br>
-        <input type="number" step="1" name="OrigLoanTerm" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Property Type Single-Family (0 or 1):</label>
+                    <input type="number" step="1" name="PropertyType_Single-Family" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Channel B (0 or 1):</label>
+                    <input type="number" step="1" name="Channel_B" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Loan Purpose P (0 or 1):</label><br>
-        <input type="number" step="1" name="LoanPurpose_P" min="0" max="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Channel C (0 or 1):</label>
+                    <input type="number" step="1" name="Channel_C" min="0" max="1" required>
+                </div>
+                <div>
+                    <label>Channel R (0 or 1):</label>
+                    <input type="number" step="1" name="Channel_R" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Loan Purpose R (0 or 1):</label><br>
-        <input type="number" step="1" name="LoanPurpose_R" min="0" max="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Channel T (0 or 1):</label>
+                    <input type="number" step="1" name="Channel_T" min="0" max="1" required>
+                </div>
+            </div>
 
-        <label>Occupancy INV (0 or 1):</label><br>
-        <input type="number" step="1" name="Occupancy_INV" min="0" max="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Property State:</label>
+                    <input type="text" name="PropertyState" required>
+                </div>
+                <div>
+                    <label>Number of Borrowers:</label>
+                    <input type="text" name="NumBorrowers" required>
+                </div>
+            </div>
 
-        <label>Occupancy PR (0 or 1):</label><br>
-        <input type="number" step="1" name="Occupancy_PR" min="0" max="1" required><br><br>
+            <div class="form-row">
+                <div>
+                    <label>Credit Score Category:</label>
+                    <input type="text" name="CreditScoreCategory" required>
+                </div>
+                <div>
+                    <label>DTI Category:</label>
+                    <input type="text" name="DTICategory" required>
+                </div>
+            </div>
 
-        <label>Occupancy SH (0 or 1):</label><br>
-        <input type="number" step="1" name="Occupancy_SH" min="0" max="1" required><br><br>
+            <input type="submit" value="Predict">
+        </form>
 
-        <label>Property Type Condo (0 or 1):</label><br>
-        <input type="number" step="1" name="PropertyType_Condo" min="0" max="1" required><br><br>
+        {% if prediction_text %}
+            <div class="prediction-result">
+                <h3>{{ prediction_text }}</h3>
+            </div>
+        {% endif %}
+    </div>
 
-        <label>Property Type Multi-Family (0 or 1):</label><br>
-        <input type="number" step="1" name="PropertyType_Multi-Family" min="0" max="1" required><br><br>
-
-        <label>Property Type Other (0 or 1):</label><br>
-        <input type="number" step="1" name="PropertyType_Other" min="0" max="1" required><br><br>
-
-        <label>Property Type Single-Family (0 or 1):</label><br>
-        <input type="number" step="1" name="PropertyType_Single-Family" min="0" max="1" required><br><br>
-
-        <label>Channel B (0 or 1):</label><br>
-        <input type="number" step="1" name="Channel_B" min="0" max="1" required><br><br>
-
-        <label>Channel C (0 or 1):</label><br>
-        <input type="number" step="1" name="Channel_C" min="0" max="1" required><br><br>
-
-        <label>Channel R (0 or 1):</label><br>
-        <input type="number" step="1" name="Channel_R" min="0" max="1" required><br><br>
-
-        <label>Channel T (0 or 1):</label><br>
-        <input type="number" step="1" name="Channel_T" min="0" max="1" required><br><br>
-
-        <label>Property State:</label><br>
-        <input type="text" name="PropertyState" required><br><br>
-
-        <label>Number of Borrowers:</label><br>
-        <input type="text" name="NumBorrowers" required><br><br>
-
-        <label>Credit Score Category:</label><br>
-        <input type="text" name="CreditScoreCategory" required><br><br>
-
-        <label>DTI Category:</label><br>
-        <input type="text" name="DTICategory" required><br><br>
-
-        <input type="submit" value="Predict">
-    </form>
-
-    {% if prediction_text %}
-        <h3>{{ prediction_text }}</h3>
-    {% endif %}
 </body>
 </html>
